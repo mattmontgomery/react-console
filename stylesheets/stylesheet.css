@@ -37,7 +37,7 @@ a {
 .btn-dark {
   color: rgba(50, 50, 50, 0.7);
   background-color: rgba(50, 50, 50, 0.08);
-  border-color: rgba(50, 50, 50, 0.2);
+  border-color: rgba(50, 50, 50, 0.2); }
 
 .btn-dark:hover {
   color: rgba(50, 50, 50, 0.8);
