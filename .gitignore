@@ -1,0 +1,4 @@
+# Ignore project generated files
+dist
+typings
+node_modules
