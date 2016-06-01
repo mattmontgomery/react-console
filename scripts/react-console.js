@@ -20765,10 +20765,7 @@ var Example =
 	    };
 	    default_1.prototype.render = function () {
 	        var _this = this;
-	        return React.createElement("div", {ref: function (ref) { return _this.child.container = ref; }, className: "react-console-container " + (this.state.focus ? "react-console-focus" : "react-console-nofocus"), onClick: this.focus}, React.createElement("textarea", {ref: function (ref) { return _this.child.typer = ref; }, className: "react-console-typer", autocomplete: "off", autocorrect: "off", autocapitalize: "off", spellcheck: "false", style: {
-	            position: 'absolute',
-	            left: '-9999px',
-	        }, onBlur: this.blur, onKeyDown: this.keyDown, onChange: this.change, onPaste: this.paste}), this.props.welcomeMessage ?
+	        return React.createElement("div", {ref: function (ref) { return _this.child.container = ref; }, className: "react-console-container " + (this.state.focus ? "react-console-focus" : "react-console-nofocus"), onClick: this.focus}, this.props.welcomeMessage ?
 	            React.createElement("div", {className: "react-console-message react-console-welcome"}, "this.props.welcomeMessage")
 	            : null, this.state.log.map(function (val) {
 	            return [
@@ -20778,7 +20775,7 @@ var Example =
 	            }));
 	        }), this.state.acceptInput ?
 	            React.createElement(ConsolePrompt, {label: this.props.promptLabel, value: this.state.promptText, column: this.state.column})
-	            : null);
+	            : null, React.createElement("div", {style: { overflow: "hidden", height: 0 }}, React.createElement("textarea", {ref: function (ref) { return _this.child.typer = ref; }, className: "react-console-typer", autocomplete: "off", autocorrect: "off", autocapitalize: "off", spellcheck: "false", style: { outline: "none" }, onBlur: this.blur, onKeyDown: this.keyDown, onChange: this.change, onPaste: this.paste})));
 	    };
 	    default_1.defaultProps = {
 	        promptLabel: '> ',
