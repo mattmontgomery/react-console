@@ -67,7 +67,7 @@ var Example =
 	    }
 	    EchoConsole.prototype.render = function () {
 	        var _this = this;
-	        return React.createElement(react_console_tsx_1.default, {ref: function (ref) { return _this.child.console = ref; }, handler: this.echo});
+	        return React.createElement(react_console_tsx_1.default, {ref: function (ref) { return _this.child.console = ref; }, handler: this.echo, autofocus: true});
 	    };
 	    return EchoConsole;
 	}(React.Component));
