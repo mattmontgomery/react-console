@@ -56,18 +56,26 @@ var Example =
 	var react_console_tsx_1 = __webpack_require__(168);
 	var EchoConsole = (function (_super) {
 	    __extends(EchoConsole, _super);
-	    function EchoConsole() {
+	    function EchoConsole(props) {
 	        var _this = this;
-	        _super.apply(this, arguments);
+	        _super.call(this, props);
 	        this.child = {};
 	        this.echo = function (text) {
 	            _this.child.console.log(text);
-	            _this.child.console.return();
+	            _this.setState({
+	                count: _this.state.count + 1,
+	            }, _this.child.console.return);
+	        };
+	        this.promptLabel = function () {
+	            return _this.state.count + "> ";
+	        };
+	        this.state = {
+	            count: 0,
 	        };
 	    }
 	    EchoConsole.prototype.render = function () {
 	        var _this = this;
-	        return React.createElement(react_console_tsx_1.default, {ref: function (ref) { return _this.child.console = ref; }, handler: this.echo, autofocus: true});
+	        return React.createElement(react_console_tsx_1.default, {ref: function (ref) { return _this.child.console = ref; }, handler: this.echo, promptLabel: this.promptLabel, autofocus: true});
 	    };
 	    return EchoConsole;
 	}(React.Component));
@@ -20430,6 +20438,34 @@ var Example =
 	        var _this = this;
 	        _super.call(this, props);
 	        this.child = {};
+	        this.log = function () {
+	            var messages = [];
+	            for (var _i = 0; _i < arguments.length; _i++) {
+	                messages[_i - 0] = arguments[_i];
+	            }
+	            var log = _this.state.log;
+	            log[_this.state.log.length - 1].message.push({ value: messages });
+	            _this.setState({
+	                log: log,
+	            }, _this.scrollIfBottom());
+	        };
+	        this.logX = function (type) {
+	            var messages = [];
+	            for (var _i = 1; _i < arguments.length; _i++) {
+	                messages[_i - 1] = arguments[_i];
+	            }
+	            var log = _this.state.log;
+	            log[_this.state.log.length - 1].message.push({ type: type, value: messages });
+	            _this.setState({
+	                log: log,
+	            }, _this.scrollIfBottom());
+	        };
+	        this.return = function () {
+	            _this.setState({
+	                currLabel: _this.nextLabel(),
+	                acceptInput: true
+	            }, _this.scrollIfBottom());
+	        };
 	        this.focus = function () {
 	            if (!window.getSelection().toString()) {
 	                _this.child.typer.focus();
@@ -20622,6 +20658,7 @@ var Example =
 	                    // show completions
 	                    var log = _this.state.log;
 	                    log.push({
+	                        label: _this.state.currLabel,
 	                        command: _this.state.promptText,
 	                        message: [{
 	                                type: "completion",
@@ -20629,6 +20666,7 @@ var Example =
 	                            }]
 	                    });
 	                    _this.setState({
+	                        currLabel: _this.nextLabel(),
 	                        log: log,
 	                    }, _this.scrollToBottom);
 	                }
@@ -20645,8 +20683,14 @@ var Example =
 	                var command = _this.state.promptText;
 	                var history_1 = _this.state.history;
 	                var log = _this.state.log;
-	                history_1.push(command);
-	                log.push({ command: command, message: [] });
+	                if (!history_1 || history_1[history_1.length - 1] != command) {
+	                    history_1.push(command);
+	                }
+	                log.push({
+	                    label: _this.state.currLabel,
+	                    command: command,
+	                    message: []
+	                });
 	                _this.setState({
 	                    promptText: "",
 	                    restoreText: "",
@@ -20702,7 +20746,16 @@ var Example =
 	        this.scrollToBottom = function () {
 	            _this.child.container.scrollTop = _this.child.container.scrollHeight;
 	        };
+	        this.nextLabel = function () {
+	            if (typeof _this.props.promptLabel === "string") {
+	                return _this.props.promptLabel;
+	            }
+	            else {
+	                return _this.props.promptLabel();
+	            }
+	        };
 	        this.state = {
+	            currLabel: this.nextLabel(),
 	            promptText: '',
 	            restoreText: '',
 	            column: 0,
@@ -20713,31 +20766,6 @@ var Example =
 	            acceptInput: true,
 	        };
 	    }
-	    default_1.prototype.log = function () {
-	        var messages = [];
-	        for (var _i = 0; _i < arguments.length; _i++) {
-	            messages[_i - 0] = arguments[_i];
-	        }
-	        var log = this.state.log;
-	        log[this.state.log.length - 1].message.push({ value: messages });
-	        this.setState({
-	            log: log,
-	        }, this.scrollIfBottom());
-	    };
-	    default_1.prototype.logX = function (type) {
-	        var messages = [];
-	        for (var _i = 1; _i < arguments.length; _i++) {
-	            messages[_i - 1] = arguments[_i];
-	        }
-	        var log = this.state.log;
-	        log[this.state.log.length - 1].message.push({ type: type, value: messages });
-	        this.setState({
-	            log: log,
-	        }, this.scrollIfBottom());
-	    };
-	    default_1.prototype.return = function () {
-	        this.setState({ acceptInput: true }, this.scrollIfBottom());
-	    };
 	    default_1.prototype.componentDidMount = function () {
 	        if (this.props.autofocus) {
 	            this.focus();
@@ -20769,12 +20797,12 @@ var Example =
 	            React.createElement("div", {className: "react-console-message react-console-welcome"}, "this.props.welcomeMessage")
 	            : null, this.state.log.map(function (val) {
 	            return [
-	                React.createElement(ConsolePrompt, {label: _this.props.promptLabel, value: val.command})
+	                React.createElement(ConsolePrompt, {label: val.label, value: val.command})
 	            ].concat(val.message.map(function (val, idx) {
 	                return React.createElement(ConsoleMessage, {key: idx, type: val.type, value: val.value});
 	            }));
 	        }), this.state.acceptInput ?
-	            React.createElement(ConsolePrompt, {label: this.props.promptLabel, value: this.state.promptText, column: this.state.column})
+	            React.createElement(ConsolePrompt, {label: this.state.currLabel, value: this.state.promptText, column: this.state.column})
 	            : null, React.createElement("div", {style: { overflow: "hidden", height: 0 }}, React.createElement("textarea", {ref: function (ref) { return _this.child.typer = ref; }, className: "react-console-typer", autocomplete: "off", autocorrect: "off", autocapitalize: "off", spellcheck: "false", style: { outline: "none" }, onBlur: this.blur, onKeyDown: this.keyDown, onChange: this.change, onPaste: this.paste})));
 	    };
 	    default_1.defaultProps = {
