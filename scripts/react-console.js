@@ -20396,17 +20396,16 @@ var Example =
 	    };
 	    ConsolePrompt.prototype.renderValue = function () {
 	        var _this = this;
-	        var value = this.props.value.replace(/ /g, '\u00a0');
 	        if (this.props.column < 0) {
-	            return [value];
+	            return [this.props.value];
 	        }
-	        else if (this.props.column == value.length) {
-	            return [value, React.createElement("span", {ref: function (ref) { return _this.child.cursor = ref; }, key: "cursor", className: "react-console-cursor"}, " ")];
+	        else if (this.props.column == this.props.value.length) {
+	            return [this.props.value, React.createElement("span", {ref: function (ref) { return _this.child.cursor = ref; }, key: "cursor", className: "react-console-cursor"}, " ")];
 	        }
 	        else {
-	            return [value.substring(0, this.props.column),
-	                React.createElement("span", {ref: function (ref) { return _this.child.cursor = ref; }, key: "cursor", className: "react-console-cursor"}, value.substring(this.props.column, this.props.column + 1)),
-	                value.substring(this.props.column + 1)];
+	            return [this.props.value.substring(0, this.props.column),
+	                React.createElement("span", {ref: function (ref) { return _this.child.cursor = ref; }, key: "cursor", className: "react-console-cursor"}, this.props.value.substring(this.props.column, this.props.column + 1)),
+	                this.props.value.substring(this.props.column + 1)];
 	        }
 	    };
 	    ConsolePrompt.prototype.render = function () {
@@ -20543,22 +20542,31 @@ var Example =
 	                }
 	            }
 	        };
-	        this.change = function (e) {
-	            _this.consoleInsert(e.target.value);
-	            e.target.value = "";
+	        this.change = function () {
+	            var idx = 0;
+	            for (; idx < _this.state.typer.length && idx < _this.child.typer.value.length; idx++) {
+	                if (_this.state.typer[idx] != _this.child.typer.value[idx]) {
+	                    break;
+	                }
+	            }
+	            _this.consoleInsert(_this.child.typer.value.substring(idx), _this.state.typer.length - idx);
+	            _this.setState({
+	                typer: _this.child.typer.value,
+	            });
 	        };
 	        this.paste = function (e) {
-	            _this.consoleInsert(e.target.value);
-	            e.target.value = "";
+	            _this.consoleInsert(e.clipboardData.getData('text'));
+	            e.preventDefault();
 	        };
-	        this.consoleInsert = function (text) {
-	            var promptText = _this.state.promptText.substring(0, _this.state.column)
+	        this.consoleInsert = function (text, replace) {
+	            if (replace === void 0) { replace = 0; }
+	            var promptText = _this.state.promptText.substring(0, _this.state.column - replace)
 	                + text
 	                + _this.state.promptText.substring(_this.state.column);
 	            _this.setState({
 	                promptText: promptText,
 	                restoreText: promptText,
-	                column: _this.moveColumn(text.length, text.length + _this.state.promptText.length)
+	                column: _this.moveColumn(text.length - replace, text.length - replace + _this.state.promptText.length)
 	            }, _this.scrollToBottom);
 	        };
 	        this.moveColumn = function (n, max) {
@@ -20676,7 +20684,11 @@ var Example =
 	            _this.props.cancel();
 	        };
 	        this.commandTrigger = function () {
+	            _this.child.typer.value = "";
 	            if (_this.props.continue(_this.state.promptText)) {
+	                _this.setState({
+	                    typer: "",
+	                });
 	                _this.consoleInsert("\n");
 	            }
 	            else {
@@ -20699,6 +20711,7 @@ var Example =
 	                    ringn: 0,
 	                    log: log,
 	                    acceptInput: false,
+	                    typer: "",
 	                }, function () {
 	                    _this.scrollToBottom();
 	                    _this.props.handler(command_1);
@@ -20778,6 +20791,7 @@ var Example =
 	            log: [],
 	            focus: false,
 	            acceptInput: true,
+	            typer: '',
 	        };
 	    }
 	    default_1.prototype.componentDidMount = function () {

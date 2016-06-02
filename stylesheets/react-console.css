@@ -7,7 +7,8 @@ div.react-console-container {
   height: 20em;
   background: #efefef;
   padding: 0.5em;
-  overflow: auto; }
+  overflow: auto;
+  white-space: pre; }
 
 div.react-console-prompt-box {
   color: #444; }
@@ -43,4 +44,5 @@ div.react-console-focus span.react-console-cursor-idle {
     color: #444; } }
 
 div.react-console-message {
+  color: #999;
   padding: 0.1em; }
