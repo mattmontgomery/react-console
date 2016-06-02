@@ -20680,15 +20680,15 @@ var Example =
 	                _this.consoleInsert("\n");
 	            }
 	            else {
-	                var command = _this.state.promptText;
+	                var command_1 = _this.state.promptText;
 	                var history_1 = _this.state.history;
 	                var log = _this.state.log;
-	                if (!history_1 || history_1[history_1.length - 1] != command) {
-	                    history_1.push(command);
+	                if (!history_1 || history_1[history_1.length - 1] != command_1) {
+	                    history_1.push(command_1);
 	                }
 	                log.push({
 	                    label: _this.state.currLabel,
-	                    command: command,
+	                    command: command_1,
 	                    message: []
 	                });
 	                _this.setState({
@@ -20699,8 +20699,7 @@ var Example =
 	                    ringn: 0,
 	                    log: log,
 	                    acceptInput: false,
-	                });
-	                _this.props.handler(command);
+	                }, function () { return _this.props.handler(command_1); });
 	            }
 	        };
 	        this.rotateHistory = function (n) {
@@ -20735,13 +20734,19 @@ var Example =
 	        this.nextHistory = function () {
 	            _this.rotateHistory(1);
 	        };
+	        this.scrollSemaphore = 0;
 	        this.scrollIfBottom = function () {
-	            if (_this.child.container.scrollTop == _this.child.container.scrollHeight - _this.child.container.offsetHeight) {
-	                return _this.scrollToBottom;
+	            if (_this.scrollSemaphore > 0 || _this.child.container.scrollTop == _this.child.container.scrollHeight - _this.child.container.offsetHeight) {
+	                _this.scrollSemaphore++;
+	                return _this.scrollIfBottomTrue;
 	            }
 	            else {
 	                return null;
 	            }
+	        };
+	        this.scrollIfBottomTrue = function () {
+	            _this.scrollToBottom();
+	            _this.scrollSemaphore--;
 	        };
 	        this.scrollToBottom = function () {
 	            _this.child.container.scrollTop = _this.child.container.scrollHeight;
