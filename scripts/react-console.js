@@ -20766,7 +20766,7 @@ var Example =
 	        };
 	        this.scrollToBottom = function () {
 	            _this.child.container.scrollTop = _this.child.container.scrollHeight;
-	            var rect = _this.child.typer.getBoundingClientRect();
+	            var rect = _this.child.focus.getBoundingClientRect();
 	            if (rect.top < 0 || rect.left < 0 ||
 	                rect.bottom > (window.innerHeight || document.documentElement.clientHeight) ||
 	                rect.right > (window.innerWidth || document.documentElement.clientWidth)) {
@@ -20837,7 +20837,7 @@ var Example =
 	            border: "none",
 	            resize: "none",
 	            overflow: "hidden",
-	        }, onBlur: this.blur, onKeyDown: this.keyDown, onChange: this.change, onPaste: this.paste})));
+	        }, onBlur: this.blur, onKeyDown: this.keyDown, onChange: this.change, onPaste: this.paste})), React.createElement("div", {ref: function (ref) { return _this.child.focus = ref; }}, " "));
 	    };
 	    default_1.defaultProps = {
 	        promptLabel: '> ',
