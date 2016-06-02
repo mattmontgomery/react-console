@@ -20699,7 +20699,10 @@ var Example =
 	                    ringn: 0,
 	                    log: log,
 	                    acceptInput: false,
-	                }, function () { return _this.props.handler(command_1); });
+	                }, function () {
+	                    _this.scrollToBottom();
+	                    _this.props.handler(command_1);
+	                });
 	            }
 	        };
 	        this.rotateHistory = function (n) {
