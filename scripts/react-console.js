@@ -20831,7 +20831,7 @@ var Example =
 	            }));
 	        }), this.state.acceptInput ?
 	            React.createElement(ConsolePrompt, {label: this.state.currLabel, value: this.state.promptText, column: this.state.column})
-	            : null, React.createElement("div", {style: { overflow: "hidden", height: 0 }}, React.createElement("textarea", {ref: function (ref) { return _this.child.typer = ref; }, className: "react-console-typer", autocomplete: "off", autocorrect: "off", autocapitalize: "off", spellcheck: "false", style: { outline: "none" }, onBlur: this.blur, onKeyDown: this.keyDown, onChange: this.change, onPaste: this.paste})));
+	            : null, React.createElement("div", {style: { overflow: "hidden", height: 0 }}, React.createElement("textarea", {ref: function (ref) { return _this.child.typer = ref; }, className: "react-console-typer", autoComplete: "off", autoCorrect: "off", autoCapitalize: "off", spellCheck: "false", style: { outline: "none" }, onBlur: this.blur, onKeyDown: this.keyDown, onChange: this.change, onPaste: this.paste})));
 	    };
 	    default_1.defaultProps = {
 	        promptLabel: '> ',
