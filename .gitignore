@@ -1,4 +1,5 @@
 # Ignore project generated files
 dist
+lib
 typings
 node_modules
