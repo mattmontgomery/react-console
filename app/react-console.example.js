@@ -20598,6 +20598,8 @@ var Example =
 		                85: _this.deleteUntilStart,
 		                // C-k
 		                75: _this.deleteUntilEnd,
+		                // C-c
+		                67: _this.cancelCommand,
 		            };
 		            var altCodes = {
 		                // M-f
@@ -20762,8 +20764,29 @@ var Example =
 		                }
 		            }
 		        };
-		        this.cancelExecution = function () {
-		            _this.props.cancel();
+		        this.cancelCommand = function () {
+		            if (_this.state.acceptInput) {
+		                _this.child.typer.value = "";
+		                var log = _this.state.log;
+		                log.push({
+		                    label: _this.state.currLabel,
+		                    command: _this.state.promptText,
+		                    message: []
+		                });
+		                _this.setState({
+		                    promptText: "",
+		                    restoreText: "",
+		                    column: 0,
+		                    ringn: 0,
+		                    log: log,
+		                    typer: "",
+		                }, function () {
+		                    _this.scrollToBottom();
+		                });
+		            }
+		            else {
+		                _this.props.cancel();
+		            }
 		        };
 		        this.commandTrigger = function () {
 		            _this.child.typer.value = "";
