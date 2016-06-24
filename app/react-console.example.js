@@ -20519,6 +20519,7 @@ var Example =
 		        var _this = this;
 		        _super.call(this, props);
 		        this.child = {};
+		        // Command API
 		        this.log = function () {
 		            var messages = [];
 		            for (var _i = 0; _i < arguments.length; _i++) {
@@ -20547,6 +20548,7 @@ var Example =
 		                acceptInput: true
 		            }, _this.scrollIfBottom());
 		        };
+		        // Event Handlers
 		        this.focus = function () {
 		            if (!window.getSelection().toString()) {
 		                _this.child.typer.focus();
@@ -20558,55 +20560,73 @@ var Example =
 		        };
 		        this.keyDown = function (e) {
 		            var keyCodes = {
+		                // return
+		                13: _this.acceptLine,
 		                // left
-		                37: _this.moveBackward,
+		                37: _this.backwardChar,
 		                // right
-		                39: _this.moveForward,
+		                39: _this.forwardChar,
 		                // up
 		                38: _this.previousHistory,
 		                // down
 		                40: _this.nextHistory,
 		                // backspace
-		                8: _this.backDelete,
+		                8: _this.backwardDeleteChar,
 		                // delete
-		                46: _this.forwardDelete,
+		                46: _this.deleteChar,
 		                // end
-		                35: _this.moveToEnd,
+		                35: _this.endOfLine,
 		                // start
-		                36: _this.moveToStart,
-		                // return
-		                13: _this.commandTrigger,
+		                36: _this.beginningOfLine,
 		                // tab
-		                9: _this.doComplete,
+		                9: _this.complete,
 		            };
 		            var ctrlCodes = {
 		                // C-a
-		                65: _this.moveToStart,
+		                65: _this.beginningOfLine,
 		                // C-e
-		                69: _this.moveToEnd,
-		                // C-d
-		                68: _this.forwardDelete,
-		                // C-n
-		                78: _this.nextHistory,
+		                69: _this.endOfLine,
+		                // C-f
+		                70: _this.forwardChar,
+		                // C-b
+		                66: _this.backwardChar,
 		                // C-p
 		                80: _this.previousHistory,
-		                // C-b
-		                66: _this.moveBackward,
-		                // C-f
-		                70: _this.moveForward,
-		                // C-u
-		                85: _this.deleteUntilStart,
+		                // C-n
+		                78: _this.nextHistory,
+		                // C-r TODO
+		                //82: this.reverseSearchHistory,
+		                // C-s TODO
+		                //83: this.forwardSearchHistory,
+		                // C-l TODO
+		                //76: this.clearScreen,
+		                // C-d
+		                68: _this.deleteChar,
+		                // C-q TODO
+		                //81: this.quotedInsert,
+		                // C-v TODO
+		                //86: this.quotedInsert,
+		                // C-t TODO
+		                //84: this.transposeChars,
 		                // C-k
-		                75: _this.deleteUntilEnd,
+		                75: _this.killLine,
+		                // C-u TODO kill
+		                85: _this.backwardKillLine,
+		                // C-y TODO
+		                //89: this.yank,
 		                // C-c
 		                67: _this.cancelCommand,
 		            };
+		            var ctrlXCodes = {};
+		            var ctrlShiftCodes = {};
 		            var altCodes = {
 		                // M-f
-		                70: _this.moveToNextWord,
+		                70: _this.forwardWord,
 		                // M-b
-		                66: _this.moveToPreviousWord,
+		                66: _this.backwardWord,
 		            };
+		            var altShiftCodes = {};
+		            var metaCtrlCodes = {};
 		            if (_this.state.acceptInput) {
 		                if (e.altKey) {
 		                    if (e.keyCode in altCodes) {
@@ -20642,6 +20662,97 @@ var Example =
 		            _this.consoleInsert(e.clipboardData.getData('text'));
 		            e.preventDefault();
 		        };
+		        // Commands for Moving
+		        this.beginningOfLine = function () {
+		            _this.setState({
+		                column: 0
+		            }, _this.scrollToBottom);
+		        };
+		        this.endOfLine = function () {
+		            _this.setState({
+		                column: _this.state.promptText.length
+		            }, _this.scrollToBottom);
+		        };
+		        this.forwardChar = function () {
+		            _this.setState({
+		                column: _this.moveColumn(1)
+		            }, _this.scrollToBottom);
+		        };
+		        this.backwardChar = function () {
+		            _this.setState({
+		                column: _this.moveColumn(-1)
+		            }, _this.scrollToBottom);
+		        };
+		        this.forwardWord = function () {
+		            _this.setState({
+		                column: _this.nextWord()
+		            }, _this.scrollToBottom);
+		        };
+		        this.backwardWord = function () {
+		            _this.setState({
+		                column: _this.previousWord()
+		            }, _this.scrollToBottom);
+		        };
+		        // Commands for Manipulating the History
+		        this.acceptLine = function () {
+		            _this.child.typer.value = "";
+		            if (_this.props.continue(_this.state.promptText)) {
+		                _this.setState({
+		                    typer: "",
+		                });
+		                _this.consoleInsert("\n");
+		            }
+		            else {
+		                var command_1 = _this.state.promptText;
+		                var history_1 = _this.state.history;
+		                var log = _this.state.log;
+		                if (!history_1 || history_1[history_1.length - 1] != command_1) {
+		                    history_1.push(command_1);
+		                }
+		                log.push({
+		                    label: _this.state.currLabel,
+		                    command: command_1,
+		                    message: []
+		                });
+		                _this.setState({
+		                    promptText: "",
+		                    restoreText: "",
+		                    column: 0,
+		                    history: history_1,
+		                    ringn: 0,
+		                    log: log,
+		                    acceptInput: false,
+		                    typer: "",
+		                }, function () {
+		                    _this.scrollToBottom();
+		                    _this.props.handler(command_1);
+		                });
+		            }
+		        };
+		        this.previousHistory = function () {
+		            _this.rotateHistory(-1);
+		        };
+		        this.nextHistory = function () {
+		            _this.rotateHistory(1);
+		        };
+		        // Commands for Changing Text
+		        this.deleteChar = function () {
+		            if (_this.state.column < _this.state.promptText.length) {
+		                _this.setState({
+		                    promptText: _this.state.promptText.substring(0, _this.state.column)
+		                        + _this.state.promptText.substring(_this.state.column + 1),
+		                }, _this.scrollToBottom);
+		            }
+		        };
+		        this.backwardDeleteChar = function () {
+		            if (_this.state.column > 0) {
+		                _this.setState({
+		                    promptText: _this.state.promptText.substring(0, _this.state.column - 1)
+		                        + _this.state.promptText.substring(_this.state.column),
+		                    column: _this.moveColumn(-1),
+		                }, _this.scrollToBottom);
+		            }
+		        };
 		        this.consoleInsert = function (text, replace) {
 		            if (replace === void 0) { replace = 0; }
 		            var promptText = _this.state.promptText.substring(0, _this.state.column - replace)
@@ -20653,78 +20764,23 @@ var Example =
 		                column: _this.moveColumn(text.length - replace, text.length - replace + _this.state.promptText.length)
 		            }, _this.scrollToBottom);
 		        };
-		        this.moveColumn = function (n, max) {
-		            if (max === void 0) { max = _this.state.promptText.length; }
-		            var pos = _this.state.column + n;
-		            if (pos < 0) {
-		                return 0;
-		            }
-		            if (pos > max) {
-		                return max;
-		            }
-		            else {
-		                return pos;
-		            }
+		        // Killing and Yanking
+		        this.killLine = function () {
+		            // TODO kill
+		            _this.setState({
+		                promptText: _this.state.promptText.substring(0, _this.state.column),
+		            }, _this.scrollToBottom);
 		        };
-		        this.backDelete = function () {
-		            if (_this.state.column > 0) {
-		                _this.setState({
-		                    promptText: _this.state.promptText.substring(0, _this.state.column - 1)
-		                        + _this.state.promptText.substring(_this.state.column),
-		                    column: _this.moveColumn(-1),
-		                }, _this.scrollToBottom);
-		            }
-		        };
-		        this.forwardDelete = function () {
-		            if (_this.state.column < _this.state.promptText.length) {
-		                _this.setState({
-		                    promptText: _this.state.promptText.substring(0, _this.state.column)
-		                        + _this.state.promptText.substring(_this.state.column + 1),
-		                }, _this.scrollToBottom);
-		            }
-		        };
-		        this.deleteUntilStart = function () {
+		        this.backwardKillLine = function () {
+		            // TODO kill
 		            _this.setState({
 		                promptText: _this.state.promptText.substring(_this.state.column),
 		                column: 0,
 		            }, _this.scrollToBottom);
 		        };
-		        this.deleteUntilEnd = function () {
-		            _this.setState({
-		                promptText: _this.state.promptText.substring(0, _this.state.column),
-		            }, _this.scrollToBottom);
-		        };
-		        this.moveBackward = function () {
-		            _this.setState({
-		                column: _this.moveColumn(-1)
-		            }, _this.scrollToBottom);
-		        };
-		        this.moveForward = function () {
-		            _this.setState({
-		                column: _this.moveColumn(1)
-		            }, _this.scrollToBottom);
-		        };
-		        this.moveToStart = function () {
-		            _this.setState({
-		                column: 0
-		            }, _this.scrollToBottom);
-		        };
-		        this.moveToEnd = function () {
-		            _this.setState({
-		                column: _this.state.promptText.length
-		            }, _this.scrollToBottom);
-		        };
-		        this.moveToNextWord = function () {
-		            _this.setState({
-		                column: _this.nextWord()
-		            }, _this.scrollToBottom);
-		        };
-		        this.moveToPreviousWord = function () {
-		            _this.setState({
-		                column: _this.previousWord()
-		            }, _this.scrollToBottom);
-		        };
-		        this.doComplete = function () {
+		        // Numeric Arguments
+		        // Completing
+		        this.complete = function () {
 		            if (_this.props.complete) {
 		                // Split text and find current word
 		                var words = _this.state.promptText.split(" ");
@@ -20764,6 +20820,8 @@ var Example =
 		                }
 		            }
 		        };
+		        // Keyboard Macros
+		        // Miscellaneous
 		        this.cancelCommand = function () {
 		            if (_this.state.acceptInput) {
 		                _this.child.typer.value = "";
@@ -20788,39 +20846,18 @@ var Example =
 		                _this.props.cancel();
 		            }
 		        };
-		        this.commandTrigger = function () {
-		            _this.child.typer.value = "";
-		            if (_this.props.continue(_this.state.promptText)) {
-		                _this.setState({
-		                    typer: "",
-		                });
-		                _this.consoleInsert("\n");
+		        // Helper functions
+		        this.moveColumn = function (n, max) {
+		            if (max === void 0) { max = _this.state.promptText.length; }
+		            var pos = _this.state.column + n;
+		            if (pos < 0) {
+		                return 0;
+		            }
+		            if (pos > max) {
+		                return max;
 		            }
 		            else {
-		                var command_1 = _this.state.promptText;
-		                var history_1 = _this.state.history;
-		                var log = _this.state.log;
-		                if (!history_1 || history_1[history_1.length - 1] != command_1) {
-		                    history_1.push(command_1);
-		                }
-		                log.push({
-		                    label: _this.state.currLabel,
-		                    command: command_1,
-		                    message: []
-		                });
-		                _this.setState({
-		                    promptText: "",
-		                    restoreText: "",
-		                    column: 0,
-		                    history: history_1,
-		                    ringn: 0,
-		                    log: log,
-		                    acceptInput: false,
-		                    typer: "",
-		                }, function () {
-		                    _this.scrollToBottom();
-		                    _this.props.handler(command_1);
-		                });
+		                return pos;
 		            }
 		        };
 		        this.rotateHistory = function (n) {
@@ -20848,12 +20885,6 @@ var Example =
 		                    ringn: ringn,
 		                }, _this.scrollToBottom);
 		            }
-		        };
-		        this.previousHistory = function () {
-		            _this.rotateHistory(-1);
-		        };
-		        this.nextHistory = function () {
-		            _this.rotateHistory(1);
 		        };
 		        this.scrollSemaphore = 0;
 		        this.scrollIfBottom = function () {
@@ -20899,6 +20930,7 @@ var Example =
 		            typer: '',
 		        };
 		    }
+		    // Component Lifecycle
 		    default_1.prototype.componentDidMount = function () {
 		        if (this.props.autofocus) {
 		            this.focus();
