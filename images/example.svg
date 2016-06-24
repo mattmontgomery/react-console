@@ -1,8 +1,11 @@
 <svg
 	xmlns:svg="http://www.w3.org/2000/svg"
 	xmlns="http://www.w3.org/2000/svg"
+	width="60em"
 	height="20em"
-	width="60em">
+	viewBox="0 0 60em 20em"
+	preserveAspectRatio="xMinYMin slice"
+	>
 	<style type="text/css">
 	<![CDATA[
 		#background {
