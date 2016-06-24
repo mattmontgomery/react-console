@@ -16,7 +16,7 @@
 			fill:#444;
 			font-weight:bold;
 			font-family:'Menlo','Consolas','DejaVu Sans Mono',monospace;
-			font-size:1.2em; }
+			font-size:1em; }
 		@keyframes cursor-animation {
 		  0% {
 			fill: #333; }
@@ -36,10 +36,10 @@
 		width="60em" />
 	<rect
 		id="cursor"
-		y="0.7em"
-		x="2.65em"
-		height="1.4em"
-		width="0.7em" />
+		y="0.6em"
+		x="2.25em"
+		height="1.2em"
+		width="0.6em" />
 	<text
 		y="1.55em"
 		x="0.5em" >
