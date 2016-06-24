@@ -1,8 +1,9 @@
 <svg
 	xmlns:svg="http://www.w3.org/2000/svg"
 	xmlns="http://www.w3.org/2000/svg"
-	width="60em"
 	height="20em"
+	viewBox="0 0 60 20"
+	preserveAspectRatio="xMinYMin slice"
 	>
 	<style type="text/css">
 	<![CDATA[
@@ -16,7 +17,7 @@
 			fill:#444;
 			font-weight:bold;
 			font-family:'Menlo','Consolas','DejaVu Sans Mono',monospace;
-			font-size:1em; }
+			font-size:1px; }
 		@keyframes cursor-animation {
 		  0% {
 			fill: #333; }
@@ -32,17 +33,17 @@
 		id="background"
 		y="0"
 		x="0"
-		height="20em"
-		width="60em" />
+		height="20"
+		width="60" />
 	<rect
 		id="cursor"
-		y="0.6em"
-		x="2.25em"
-		height="1.2em"
-		width="0.6em" />
+		y="0.6"
+		x="2.25"
+		height="1.2"
+		width="0.6" />
 	<text
-		y="1.55em"
-		x="0.5em" >
+		y="1.55"
+		x="0.5" >
 		0&gt;
 	</text>
 </svg>
