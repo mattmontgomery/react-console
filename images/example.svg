@@ -16,8 +16,7 @@
 		text {
 			fill:#444;
 			font-weight:bold;
-			font-family:'Menlo','Consolas','DejaVu Sans Mono',monospace;
-			font-size:1px; }
+			font-family:'Menlo','Consolas','DejaVu Sans Mono',monospace; }
 		@keyframes cursor-animation {
 		  0% {
 			fill: #333; }
@@ -43,7 +42,8 @@
 		width="0.6" />
 	<text
 		y="1.55"
-		x="0.5" >
+		x="0.5"
+		font-size="1" >
 		0&gt;
 	</text>
 </svg>
